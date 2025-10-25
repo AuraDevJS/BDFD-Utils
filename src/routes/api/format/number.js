@@ -1,58 +1,59 @@
 export default (req, res) => {
   let { value, style } = req.query;
 
-  // === HTML explicativo se não passar valor ===
+  // === HTML explicativo seguro se não passar valor ===
   if (!value) {
-    res.setHeader("Content-Type", "text/html");
-    return res.send(`<!DOCTYPE html>
+    const html = `
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Format Number - Aura Utils API</title>
 <style>
-  body { font-family: 'Segoe UI', sans-serif; background: #1e1e2f; color: #fff; margin:0; padding:0; }
-  header { background: #6e8efb; padding: 2rem; text-align: center; border-bottom: 4px solid #a777e3; }
-  header h1 { margin:0; font-size:2.5rem; }
-  main { max-width: 900px; margin: 2rem auto; padding: 1.5rem; background: rgba(0,0,0,0.3); border-radius:10px; line-height:1.6; }
-  code { background: #333; padding: 0.2rem 0.5rem; border-radius:4px; }
-  ul { list-style: disc inside; margin-left:0; padding-left:0; }
-  a { color: #ffeb3b; text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  footer { text-align:center; margin:2rem 0; color:#ccc; }
-  h2 { margin-top:1.5rem; }
+body { font-family: 'Segoe UI', sans-serif; background: #1e1e2f; color: #fff; margin:0; padding:0; }
+header { background: #6e8efb; padding: 2rem; text-align: center; border-bottom: 4px solid #a777e3; }
+header h1 { margin:0; font-size:2.5rem; }
+main { max-width: 900px; margin: 2rem auto; padding: 1.5rem; background: rgba(0,0,0,0.3); border-radius:10px; line-height:1.6; }
+code { background: #333; padding: 0.2rem 0.5rem; border-radius:4px; }
+ul { list-style: disc inside; margin-left:0; padding-left:0; }
+a { color: #ffeb3b; text-decoration: none; }
+a:hover { text-decoration: underline; }
+footer { text-align:center; margin:2rem 0; color:#ccc; }
+h2 { margin-top:1.5rem; }
 </style>
 </head>
 <body>
 <header>
-  <h1>🌌 Format Number API</h1>
-  <p>Aura Utils - Formata números grandes e converte sufixos automaticamente</p>
+<h1>🌌 Format Number API</h1>
+<p>Aura Utils - Formata números grandes e converte sufixos automaticamente</p>
 </header>
 <main>
-  <h2>Como usar:</h2>
-  <ul>
-    <li><strong>Formato curto (short)</strong>: <code>?value=1500</code> → <strong>1.5K</strong></li>
-    <li><strong>Formato longo (long)</strong>: <code>?value=1500&style=long</code> → <strong>1.5 mil</strong></li>
-    <li><strong>Formato com pontos (point)</strong>: <code>?value=1234567&style=point</code> → <strong>1.234.567</strong></li>
-    <li><strong>Formato moeda (currency)</strong>: <code>?value=1234.56&style=currency</code> → <strong>R$ 1.234,56</strong></li>
-    <li><strong>Conversão de sufixo</strong>: <code>?value=1.5K</code> → <strong>1500</strong></li>
-    <li>Suporta T (trilhão), B (bilhão), M (milhão), K (mil)</li>
-    <li>Valores negativos e decimais também são suportados</li>
-  </ul>
-  <h2>Exemplo BDFD:</h2>
-  <code>$eval[$httpGet[https://aura-utils.vercel.app/api/utils/formatNumber?value=2.3M]]</code>
-  <h2>Observações:</h2>
-  <ul>
-    <li>Não é necessário informar o estilo se quiser o padrão curto</li>
-    <li>A API detecta automaticamente sufixos e converte para número</li>
-    <li>Retorna valor arredondado em `decode` automático</li>
-  </ul>
+<h2>Como usar:</h2>
+<ul>
+<li><strong>Formato curto (short)</strong>: <code>?value=1500</code> → <strong>1.5K</strong></li>
+<li><strong>Formato longo (long)</strong>: <code>?value=1500&style=long</code> → <strong>1.5 mil</strong></li>
+<li><strong>Formato com pontos (point)</strong>: <code>?value=1234567&style=point</code> → <strong>1.234.567</strong></li>
+<li><strong>Formato moeda (currency)</strong>: <code>?value=1234.56&style=currency</code> → <strong>R$ 1.234,56</strong></li>
+<li><strong>Conversão de sufixo</strong>: <code>?value=1.5K</code> → <strong>1500</strong></li>
+<li>Suporta T (trilhão), B (bilhão), M (milhão), K (mil)</li>
+<li>Valores negativos e decimais também são suportados</li>
+</ul>
+<h2>Exemplo BDFD:</h2>
+<code>$eval[$httpGet[https://aura-utils.vercel.app/api/utils/formatNumber?value=2.3M]]</code>
+<h2>Observações:</h2>
+<ul>
+<li>Não é necessário informar o estilo se quiser o padrão curto</li>
+<li>A API detecta automaticamente sufixos e converte para número</li>
+<li>Retorna valor arredondado em decode automático</li>
+</ul>
 </main>
-<footer>
-  Feito com 💫 por Aura
-</footer>
+<footer>Feito com 💫 por Aura</footer>
 </body>
-</html>`);
+</html>
+`;
+    res.setHeader("Content-Type", "text/html");
+    return res.send(html);
   }
 
   // === Detecção automática de sufixo ===
@@ -84,7 +85,6 @@ export default (req, res) => {
       else result = value.toString();
       break;
     case "long":
-      // Plural correto sem "(s)"
       const absValue = Math.abs(value);
       if (absValue >= 1e12) result = (value / 1e12).toFixed(1) + (absValue / 1e12 === 1 ? " trilhão" : " trilhões");
       else if (absValue >= 1e9) result = (value / 1e9).toFixed(1) + (absValue / 1e9 === 1 ? " bilhão" : " bilhões");
