@@ -14,7 +14,7 @@ app.use(cors());
 const PORT = process.env.PORT || 3000;
 
 // 🔹 Diretório das rotas de utilidades
-const routesDir = path.join(process.cwd(), "routes");
+const routesDir = path.join(process.cwd(), "src", "routes");
 
 // === 🧠 Carregar todas as rotas automaticamente ===
 fs.readdirSync(routesDir).forEach((file) => {
