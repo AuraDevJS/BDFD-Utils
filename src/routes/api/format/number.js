@@ -14,30 +14,39 @@ export default (req, res) => {
   body { font-family: 'Segoe UI', sans-serif; background: #1e1e2f; color: #fff; margin:0; padding:0; }
   header { background: #6e8efb; padding: 2rem; text-align: center; border-bottom: 4px solid #a777e3; }
   header h1 { margin:0; font-size:2.5rem; }
-  main { max-width: 800px; margin: 2rem auto; padding: 1rem; background: rgba(0,0,0,0.3); border-radius:10px; }
+  main { max-width: 900px; margin: 2rem auto; padding: 1.5rem; background: rgba(0,0,0,0.3); border-radius:10px; line-height:1.6; }
   code { background: #333; padding: 0.2rem 0.5rem; border-radius:4px; }
-  ul { line-height:1.6; }
+  ul { list-style: disc inside; margin-left:0; padding-left:0; }
   a { color: #ffeb3b; text-decoration: none; }
   a:hover { text-decoration: underline; }
   footer { text-align:center; margin:2rem 0; color:#ccc; }
+  h2 { margin-top:1.5rem; }
 </style>
 </head>
 <body>
 <header>
   <h1>🌌 Format Number API</h1>
-  <p>Aura Utils - Formata números e converte sufixos automaticamente</p>
+  <p>Aura Utils - Formata números grandes e converte sufixos automaticamente</p>
 </header>
 <main>
   <h2>Como usar:</h2>
   <ul>
-    <li>Formato curto (padrão): <code>?value=1500</code> → <strong>1.5K</strong></li>
-    <li>Estilo longo: <code>?value=1500&style=long</code> → <strong>1.5 mil</strong></li>
-    <li>Estilo com ponto: <code>?value=1234567&style=point</code> → <strong>1.234.567</strong></li>
-    <li>Conversão de sufixo: <code>?value=1.5K</code> → <strong>1500</strong></li>
-    <li>Suporta T, B, M, K (ex: 2.3M → 2300000)</li>
+    <li><strong>Formato curto (short)</strong>: <code>?value=1500</code> → <strong>1.5K</strong></li>
+    <li><strong>Formato longo (long)</strong>: <code>?value=1500&style=long</code> → <strong>1.5 mil</strong></li>
+    <li><strong>Formato com pontos (point)</strong>: <code>?value=1234567&style=point</code> → <strong>1.234.567</strong></li>
+    <li><strong>Formato moeda (currency)</strong>: <code>?value=1234.56&style=currency</code> → <strong>R$ 1.234,56</strong></li>
+    <li><strong>Conversão de sufixo</strong>: <code>?value=1.5K</code> → <strong>1500</strong></li>
+    <li>Suporta T (trilhão), B (bilhão), M (milhão), K (mil)</li>
+    <li>Valores negativos e decimais também são suportados</li>
   </ul>
-  <p>Exemplo no BDFD:</p>
+  <h2>Exemplo BDFD:</h2>
   <code>$eval[$httpGet[https://aura-utils.vercel.app/api/utils/formatNumber?value=2.3M]]</code>
+  <h2>Observações:</h2>
+  <ul>
+    <li>Não é necessário informar o estilo se quiser o padrão curto</li>
+    <li>A API detecta automaticamente sufixos e converte para número</li>
+    <li>Retorna valor arredondado em `decode` automático</li>
+  </ul>
 </main>
 <footer>
   Feito com 💫 por Aura
@@ -68,17 +77,19 @@ export default (req, res) => {
   let result;
   switch (style) {
     case "short":
-      if (value >= 1e12) result = (value / 1e12).toFixed(1) + "T";
-      else if (value >= 1e9) result = (value / 1e9).toFixed(1) + "B";
-      else if (value >= 1e6) result = (value / 1e6).toFixed(1) + "M";
-      else if (value >= 1e3) result = (value / 1e3).toFixed(1) + "K";
+      if (Math.abs(value) >= 1e12) result = (value / 1e12).toFixed(1) + "T";
+      else if (Math.abs(value) >= 1e9) result = (value / 1e9).toFixed(1) + "B";
+      else if (Math.abs(value) >= 1e6) result = (value / 1e6).toFixed(1) + "M";
+      else if (Math.abs(value) >= 1e3) result = (value / 1e3).toFixed(1) + "K";
       else result = value.toString();
       break;
     case "long":
-      if (value >= 1e12) result = (value / 1e12).toFixed(1) + " trilhão(s)";
-      else if (value >= 1e9) result = (value / 1e9).toFixed(1) + " bilhão(s)";
-      else if (value >= 1e6) result = (value / 1e6).toFixed(1) + " milhão(ões)";
-      else if (value >= 1e3) result = (value / 1e3).toFixed(1) + " mil";
+      // Plural correto sem "(s)"
+      const absValue = Math.abs(value);
+      if (absValue >= 1e12) result = (value / 1e12).toFixed(1) + (absValue / 1e12 === 1 ? " trilhão" : " trilhões");
+      else if (absValue >= 1e9) result = (value / 1e9).toFixed(1) + (absValue / 1e9 === 1 ? " bilhão" : " bilhões");
+      else if (absValue >= 1e6) result = (value / 1e6).toFixed(1) + (absValue / 1e6 === 1 ? " milhão" : " milhões");
+      else if (absValue >= 1e3) result = (value / 1e3).toFixed(1) + " mil";
       else result = value.toString();
       break;
     case "point":
