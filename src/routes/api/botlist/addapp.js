@@ -37,6 +37,20 @@ function checkAppAge(appID, minDays) {
   return diffDays >= minDays;
 }
 
+// Converte valores textuais ou booleanos comuns para true/false
+function parseBoolean(value, defaultValue = true) {
+  if (value === undefined || value === null) return defaultValue;
+
+  const normalized = String(value).trim().toLowerCase();
+  const trueValues = ['true', 't', '1', 'yes', 'y', 'sim', 's'];
+  const falseValues = ['false', 'f', '0', 'no', 'n', 'não', 'nao'];
+
+  if (trueValues.includes(normalized)) return true;
+  if (falseValues.includes(normalized)) return false;
+
+  return defaultValue;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 
 export default (req, res) => {
@@ -162,7 +176,7 @@ export default (req, res) => {
   const appInfo = {
     aproved: false,
     prefix: prefix || '!',
-    slash: slash !== undefined ? slash : true,
+    slash: parseBoolean(slash, false),
     lang: parseLang(lang),
     desc: desc || 'Sem descrição...',
     img: app?.img || '',
