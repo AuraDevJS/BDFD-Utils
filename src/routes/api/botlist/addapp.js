@@ -22,7 +22,7 @@ function parseLang(langInput) {
     if (aliases.includes(lang)) return Number(code);
   }
 
-  return 13;
+  return 11;
 }
 
 // Verifica idade do app
@@ -163,7 +163,7 @@ export default (req, res) => {
     aproved: false,
     prefix: prefix || '!',
     slash: slash !== undefined ? slash : true,
-    lang: parseLang(lang) || 'Outro',
+    lang: parseLang(lang),
     desc: desc || 'Sem descrição...',
     img: app?.img || '',
     owner: devID,
