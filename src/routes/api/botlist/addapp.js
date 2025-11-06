@@ -1,6 +1,6 @@
 // Função: converte nome da linguagem em número padronizado
 function parseLang(langInput) {
-  if (!langInput) return 0; // padrão = BDFD
+  if (!langInput) return 11; // padrão = BDFD
 
   const lang = langInput.trim().toLowerCase();
   const langMap = {
