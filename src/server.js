@@ -11,26 +11,10 @@ const PORT = process.env.PORT || 3000;
 const routesDir = path.join(process.cwd(), "src/routes");
 const pagesDir = path.join(process.cwd(), "src/pages");
 
-// Servir arquivos estáticos (CSS, JS, Imagens, HTML)
-app.use(express.static(pagesDir));
-
-/*
-  ✅ SUPORTE A SUBPASTAS PARA PÁGINAS
-  - /           → /src/pages/index.html
-  - /docs       → /src/pages/docs.html
-  - /painel/home → /src/pages/painel/home.html
-  - /admin/users/logs → /src/pages/admin/users/logs.html
-*/
-
-app.get("*", (req, res, next) => {
-  let page = req.path === "/" ? "/index" : req.path;
-  const pagePath = path.join(pagesDir, `${page}.html`);
-
-  if (fs.existsSync(pagePath)) {
-    res.sendFile(pagePath);
-  } else {
-    next();
-  }
+// Servir arquivos estáticos, exceto rotas da API
+app.use((req, res, next) => {
+  if (req.path.startsWith("/api")) return next();
+  express.static(pagesDir)(req, res, next);
 });
 
 // ====== 🧠 Carregar rotas recursivamente (APIs) ======
@@ -53,6 +37,19 @@ function loadRoutes(dir, baseRoute = "") {
 }
 
 loadRoutes(routesDir);
+
+// ====== 📄 Carregar páginas HTML (com subpastas) ======
+app.get("*", (req, res) => {
+  const pagePath = req.path === "/" 
+    ? path.join(pagesDir, "index.html")
+    : path.join(pagesDir, `${req.path}.html`);
+
+  if (fs.existsSync(pagePath)) {
+    return res.sendFile(pagePath);
+  }
+
+  res.status(404).send("<h1>404 - Página não encontrada</h1>");
+});
 
 // ====== 🚀 Iniciar servidor ======
 app.listen(PORT, () => {
