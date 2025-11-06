@@ -6,26 +6,21 @@ import path from "path";
 const app = express();
 app.use(cors());
 
-// ====== 🔧 CONFIGURAÇÕES ======
+// ====== 🔧 CONFIG ======
 const PORT = process.env.PORT || 3000;
-const routesDir = path.join(process.cwd(), "src/routes");
-const pagesDir = path.join(process.cwd(), "src/pages");
+const routesDir = path.join(process.cwd(), "src/routes/api");
+const pagesDir = path.join(process.cwd(), "src/routes/pages");
 
-// Servir arquivos estáticos, exceto rotas da API
-app.use((req, res, next) => {
-  if (req.path.startsWith("/api")) return next();
-  express.static(pagesDir)(req, res, next);
-});
-
-// ====== 🧠 Carregar rotas recursivamente (APIs) ======
-function loadRoutes(dir, baseRoute = "") {
+// ====== 🧠 Carregar rotas da API (recursivo) ======
+function loadApiRoutes(dir, baseRoute = "") {
   const files = fs.readdirSync(dir);
+
   for (const file of files) {
     const fullPath = path.join(dir, file);
     const stats = fs.statSync(fullPath);
 
     if (stats.isDirectory()) {
-      loadRoutes(fullPath, `${baseRoute}/${file}`);
+      loadApiRoutes(fullPath, `${baseRoute}/${file}`);
     } else if (file.endsWith(".js")) {
       const routePath = `${baseRoute}/${file.replace(".js", "")}`;
       import(fullPath).then((routeModule) => {
@@ -35,23 +30,33 @@ function loadRoutes(dir, baseRoute = "") {
     }
   }
 }
+loadApiRoutes(routesDir);
 
-loadRoutes(routesDir);
+// ====== 📁 Servir arquivos estáticos ======
+app.use(express.static(pagesDir));
 
-// ====== 📄 Carregar páginas HTML (com subpastas) ======
+/*
+  ✅ PÁGINAS HTML COM SUPORTE A SUBPASTAS
+  /                     → /src/routes/pages/index.html
+  /docs                 → /src/routes/pages/docs.html
+  /painel/home          → /src/routes/pages/painel/home.html
+  /admin/logs/geral     → /src/routes/pages/admin/logs/geral.html
+*/
 app.get("*", (req, res) => {
-  const pagePath = req.path === "/" 
-    ? path.join(pagesDir, "index.html")
-    : path.join(pagesDir, `${req.path}.html`);
+  const requested = req.path === "/"
+    ? "index"
+    : req.path;
 
-  if (fs.existsSync(pagePath)) {
-    return res.sendFile(pagePath);
+  const filePath = path.join(pagesDir, `${requested}.html`);
+
+  if (fs.existsSync(filePath)) {
+    return res.sendFile(filePath);
   }
 
-  res.status(404).send("<h1>404 - Página não encontrada</h1>");
+  return res.status(404).send(`<h1>404 - Página não encontrada</h1>`);
 });
 
-// ====== 🚀 Iniciar servidor ======
+// ====== 🚀 Iniciar Servidor ======
 app.listen(PORT, () => {
   console.log(`✨ Aura Utils rodando em http://localhost:${PORT}`);
 });
