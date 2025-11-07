@@ -217,8 +217,7 @@
       <nav aria-label="Navegação principal">
         <a href="">Home</a>
         <a href="#sobre">Sobre</a>
-        <a href="/endpoints">Endpoints</a>
-        <a href="#exemplos">Exemplos</a>
+        <a href="/endpoints">APIs</a>
         <a href="#comunidade">Comunidade</a>
       </nav>
 
@@ -279,7 +278,7 @@ fetch('/api/v1/util/status')
   .catch(console.error)
 
 // Curl:
-// curl -s https://SEU_DOMINIO/api/v1/util/status | jq
+// curl -s https://bdfd-utils/api/v1/util/status | jq
 </pre>
       </aside>
     </section>
@@ -396,19 +395,22 @@ fetch('/api/v1/util/status')
     // Set year
     document.getElementById('ano').textContent = new Date().getFullYear();
 
-    // Smooth scroll for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(link => {
-      link.addEventListener('click', (e) => {
-        const href = link.getAttribute('href');
-        const target = document.querySelector(href);
-        if (target) {
-          e.preventDefault();
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          // update active state for bottom nav items if applicable
-          setActiveNavForTarget(href);
-        }
-      });
-    });
+    // Smooth scroll apenas para âncoras internas (#)
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+  link.addEventListener('click', (e) => {
+    const href = link.getAttribute('href');
+    // só executa scroll se for âncora válida
+    if (href.startsWith("#")) {
+      const target = document.querySelector(href);
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setActiveNavForTarget(href);
+      }
+    }
+  });
+});
+
 
     // Bottom nav interaction: highlight active item based on viewport
     const navItems = Array.from(document.querySelectorAll('.bottom-nav .nav-item'));
