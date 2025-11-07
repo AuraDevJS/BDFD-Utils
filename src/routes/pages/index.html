@@ -1,1 +1,576 @@
-teste
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BDFD Utils — Landing</title>
+  <meta name="description" content="BDFD Utils — APIs e ferramentas para desenvolvedores Bot Designer for Discord. Landing otimizada, tema Dark Code UI." />
+  <meta name="theme-color" content="#23072a" />
+  <style>
+    /* ========== Theme ========== */
+    :root{
+      --bg:#0b0710;
+      --panel:#0f0814;
+      --muted:#9aa0a6;
+      --purple-700:#5b2aa5;
+      --purple-500:#7d3fe0;
+      --accent:#b88aff;
+      --glass: rgba(255,255,255,0.03);
+      --glass-strong: rgba(255,255,255,0.04);
+      --card-shadow: 0 8px 30px rgba(11,7,16,0.65);
+      --glass-border: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      --max-width: 1100px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      --radius-lg: 14px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(125,63,224,0.08), transparent 6%),
+                  radial-gradient(900px 400px at 90% 90%, rgba(91,42,165,0.05), transparent 6%),
+                  var(--bg);
+      color:#e9e9ee;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      overflow-x:hidden;
+      padding-bottom:90px; /* espaço para bottom nav */
+    }
+
+    .wrap{
+      max-width:var(--max-width);
+      margin:28px auto;
+      padding:22px;
+      position:relative;
+      z-index:10;
+    }
+
+    header{
+      display:flex;
+      gap:20px;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:18px;
+    }
+
+    .logo{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      text-decoration:none;
+      color:inherit;
+    }
+    .logo-mark{
+      width:44px;height:44px;border-radius:10px;
+      background: linear-gradient(135deg,var(--purple-500),var(--purple-700));
+      display:inline-grid;place-items:center;
+      box-shadow: 0 8px 24px rgba(125,63,224,0.18), inset 0 -6px 18px rgba(0,0,0,0.25);
+      font-weight:700;font-size:15px;
+    }
+    .logo-text{font-weight:600;font-size:18px;letter-spacing:0.3px}
+    .logo-sub{font-size:12px;color:var(--muted);margin-top:2px}
+
+    /* Desktop nav */
+    nav{display:flex;gap:18px;align-items:center}
+    nav a{
+      color:var(--muted);
+      text-decoration:none;
+      font-size:14px;padding:8px 12px;border-radius:10px;
+      transition:all .18s ease;
+    }
+    nav a:hover{color:#fff;background:rgba(255,255,255,0.02);transform:translateY(-2px)}
+
+    .cta{
+      display:flex;gap:12px;align-items:center;
+    }
+    .btn{
+      -webkit-tap-highlight-color: transparent;
+      border:0;padding:10px 14px;border-radius:12px;font-weight:600;
+      background:linear-gradient(90deg,var(--purple-700),var(--purple-500));
+      color:white;cursor:pointer;box-shadow: 0 8px 26px rgba(125,63,224,0.16);
+      transition:transform .12s ease, box-shadow .12s ease, filter .12s ease;
+      backdrop-filter: blur(6px);
+    }
+    .btn:active{transform:translateY(1px)}
+    .btn.ghost{
+      background:transparent;border:1px solid rgba(255,255,255,0.04);
+      color:var(--accent);
+      box-shadow:none;
+    }
+
+    /* Hero layout */
+    .hero{
+      display:grid;grid-template-columns:1fr 420px;gap:26px;align-items:center;
+      margin-top:8px;
+    }
+    .hero-card{
+      padding:26px;border-radius:var(--radius-lg);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      box-shadow:var(--card-shadow);border:1px solid rgba(255,255,255,0.02);
+      position:relative;overflow:hidden;
+    }
+    .kicker{display:inline-block;padding:6px 10px;border-radius:999px;background:linear-gradient(90deg, rgba(183,138,255,0.12), rgba(125,63,224,0.06));color:var(--accent);font-weight:700;font-size:13px}
+    h1{font-size:32px;margin:12px 0 8px;line-height:1.02;letter-spacing:-0.02em}
+    p.lead{color:var(--muted);margin:0 0 16px;font-size:15px}
+
+    .features{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}
+    .feature{
+      flex:1 1 200px;background:var(--glass);padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.02);
+      display:flex;gap:12px;align-items:flex-start;
+    }
+    .feature .icon{width:36px;height:36;border-radius:8px;background:linear-gradient(135deg,var(--purple-700),var(--purple-500));display:grid;place-items:center;font-weight:700}
+
+    .card-code{
+      padding:16px;border-radius:12px;background:linear-gradient(180deg, rgba(8,4,12,0.6), rgba(8,4,12,0.4));
+      border:1px solid rgba(255,255,255,0.02);font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;font-size:13px;
+      color:#dfe7ff;
+      min-height:200px;
+    }
+
+    section{margin-top:22px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .card{padding:16px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.02);box-shadow:var(--card-shadow)}
+
+    /* Footer */
+    footer{margin-top:30px;color:var(--muted);font-size:13px;text-align:center;padding:18px 0}
+
+    /* Neon */
+    .neon{ text-shadow: 0 0 8px rgba(125,63,224,0.6), 0 0 28px rgba(183,138,255,0.09) }
+
+    /* ========== Mobile & Floating Menu (combinação A + C) ========== */
+    /* Desktop: show header nav, hide floating */
+    .bottom-nav {
+      display:none;
+    }
+
+    /* Floating bottom glass nav (mobile) */
+    .bottom-nav {
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      bottom:18px;
+      z-index:50;
+      display:flex;
+      gap:8px;
+      padding:10px 12px;
+      border-radius:40px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      backdrop-filter: blur(8px) saturate(120%);
+      border: 1px solid rgba(125,63,224,0.08);
+      box-shadow: 0 12px 40px rgba(11,7,16,0.6);
+      align-items:center;
+      min-width:320px;
+      max-width:calc(100% - 36px);
+      justify-content:space-between;
+      gap:16px;
+    }
+
+    .bottom-nav .nav-item{
+      display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 10px;border-radius:12px;color:var(--muted);text-decoration:none;font-size:12px;
+      min-width:54px;
+    }
+    .bottom-nav .nav-item svg{width:20px;height:20px;display:block;filter: drop-shadow(0 6px 18px rgba(125,63,224,0.12));}
+    .bottom-nav .nav-item.active{color:var(--accent);background:rgba(125,63,224,0.04);box-shadow: 0 8px 22px rgba(91,42,165,0.06);transform:translateY(-2px)}
+    .bottom-nav .nav-item:focus{outline:2px solid rgba(125,63,224,0.14);outline-offset:4px}
+
+    /* small screens adjustments */
+    @media (max-width:980px){
+      .hero{grid-template-columns:1fr;gap:18px}
+      .grid-3{grid-template-columns:1fr 1fr}
+      nav{display:none} /* hide desktop nav on smaller screens */
+      .cta{display:none}
+      .bottom-nav{display:flex}
+      header{align-items:center}
+      .wrap{padding:16px;margin:18px auto}
+      h1{font-size:26px}
+    }
+    @media (max-width:520px){
+      .grid-3{grid-template-columns:1fr}
+      .bottom-nav{min-width:280px}
+      .logo-mark{width:40px;height:40px;font-size:14px}
+      h1{font-size:22px}
+      body{padding-bottom:110px}
+    }
+
+    /* reduce motion */
+    @media (prefers-reduced-motion: reduce){
+      *{animation:none!important;transition:none!important}
+    }
+
+    /* small utility */
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  </style>
+</head>
+<body>
+  <canvas id="bgCanvas" aria-hidden="true" style="position:fixed;inset:0;z-index:0;pointer-events:none;"></canvas>
+
+  <div class="wrap" role="main">
+    <header>
+      <a class="logo" href="#home" aria-label="Ir para home">
+        <div class="logo-mark">BDFD</div>
+        <div>
+          <div class="logo-text">BDFD Utils</div>
+          <div class="logo-sub">APIs & Tools — Bot Designer for Discord</div>
+        </div>
+      </a>
+
+      <nav aria-label="Navegação principal">
+        <a href="">Home</a>
+        <a href="#sobre">Sobre</a>
+        <a href="/endpoints">Endpoints</a>
+        <a href="#exemplos">Exemplos</a>
+        <a href="#comunidade">Comunidade</a>
+      </nav>
+
+      <div class="cta" aria-hidden="true">
+        <a class="btn ghost" href="#apis">Documentação</a>
+      </div>
+    </header>
+
+    <!-- HERO -->
+    <section id="home" class="hero" aria-labelledby="hero-title">
+      <div class="hero-card">
+        <span class="kicker">BETA · Alta performance</span>
+        <h1 id="hero-title" class="neon">BDFD Utils — APIs para Bot Designer</h1>
+        <p class="lead">Coleção de endpoints e utils pensados para acelerar desenvolvedores do Bot Designer for Discord. Estrutura leve, documentação e exemplos prontos para integração.</p>
+
+        <div class="features" aria-hidden="false">
+          <div class="feature">
+            <div class="icon">→</div>
+            <div>
+              <div style="font-weight:700">APIs REST</div>
+              <div style="font-size:13px;color:var(--muted)">Endpoints rápidos, tipados e prontos para integração.</div>
+            </div>
+          </div>
+
+          <div class="feature">
+            <div class="icon">⚡</div>
+            <div>
+              <div style="font-weight:700">Baixa latência</div>
+              <div style="font-size:13px;color:var(--muted)">Otimizadas para alta performance em produção.</div>
+            </div>
+          </div>
+
+          <div class="feature">
+            <div class="icon">🔒</div>
+            <div>
+              <div style="font-weight:700">Segurança</div>
+              <div style="font-size:13px;color:var(--muted)">Boas práticas para proteger integrações.</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:18px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+          <a id="cta-getstarted" class="btn" href="#apis">Ver Documentação</a>
+          <a href="#exemplos" class="btn ghost" style="padding:10px 12px">Ver Exemplos</a>
+        </div>
+      </div>
+
+      <aside class="card-code" aria-label="Quickstart">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div style="font-weight:700">Quick Start</div>
+          <div style="font-size:12px;color:var(--muted)">Exemplo de uso REST</div>
+        </div>
+
+        <pre id="code-snippet">// Exemplo: buscar dados de util (GET)
+fetch('/api/v1/util/status')
+  .then(r => r.json())
+  .then(console.log)
+  .catch(console.error)
+
+// Curl:
+// curl -s https://SEU_DOMINIO/api/v1/util/status | jq
+</pre>
+      </aside>
+    </section>
+
+    <!-- Sobre -->
+    <section id="sobre" class="card" aria-labelledby="sobre-title">
+      <h2 id="sobre-title" class="neon">Sobre o BDFD Utils</h2>
+      <p style="color:var(--muted)">BDFD Utils fornece endpoints REST leves que complementam a experiência de desenvolvedores do Bot Designer for Discord — desde helpers de formatação até endpoints de integração. Esta landing é otimizada para performance e mobile-first.</p>
+    </section>
+
+    <!-- APIs -->
+    <section id="apis">
+      <h3 style="margin-bottom:8px">APIs em destaque</h3>
+      <div class="grid-3">
+        <div class="card">
+          <div style="font-weight:700">/api/v1/util/status</div>
+          <div style="color:var(--muted);margin-top:8px">Verifica integridade e tempo de resposta.</div>
+        </div>
+        <div class="card">
+          <div style="font-weight:700">/api/v1/user/:id</div>
+          <div style="color:var(--muted);margin-top:8px">Informações públicas sobre um usuário (cache otimizado).</div>
+        </div>
+        <div class="card">
+          <div style="font-weight:700">/api/v1/guilds/:id/stats</div>
+          <div style="color:var(--muted);margin-top:8px">Estatísticas agregadas (paginação & compressão disponível).</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Exemplos -->
+    <section id="exemplos">
+      <h3>Exemplos de Uso</h3>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+        <div class="card" style="flex:1 1 320px">
+          <div style="font-weight:700">Node (fetch)</div>
+          <pre>// GET simples
+fetch('/api/v1/util/status')
+  .then(r => r.json())
+  .then(data => console.log(data))</pre>
+        </div>
+
+        <div class="card" style="flex:1 1 320px">
+          <div style="font-weight:700">Curl</div>
+          <pre>curl -s https://SEU_DOMINIO/api/v1/util/status | jq</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Comunidade -->
+    <section id="comunidade" style="margin-top:18px">
+      <div class="card">
+        <h4 style="margin:0 0 10px">Comunidade & Contato</h4>
+        <p style="color:var(--muted);margin:0 0 8px">Canal Discord, issues no repositório e e-mail para suporte.</p>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+          <a class="btn ghost" href="#" onclick="event.preventDefault()">Entrar no Discord</a>
+          <a class="btn" href="#" onclick="event.preventDefault()">Abrir Issue</a>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      © <span id="ano"></span> BDFD Utils — Criado para integração com Bot Designer for Discord.
+    </footer>
+  </div>
+
+  <!-- Floating bottom nav (combinação A + C: bottom navbar com glassmorphism) -->
+  <nav class="bottom-nav" role="navigation" aria-label="Navegação inferior">
+    <a class="nav-item" href="#home" data-target="#home" aria-label="Home">
+      <!-- Home SVG -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M3 11.5L12 4l9 7.5"></path>
+        <path d="M9 21V12h6v9"></path>
+      </svg>
+      <span>Home</span>
+    </a>
+
+    <a class="nav-item" href="#apis" data-target="#apis" aria-label="APIs">
+      <!-- Api SVG -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="3" y="3" width="7" height="7"></rect>
+        <rect x="14" y="3" width="7" height="7"></rect>
+        <rect x="14" y="14" width="7" height="7"></rect>
+        <rect x="3" y="14" width="7" height="7"></rect>
+      </svg>
+      <span>APIs</span>
+    </a>
+
+    <a class="nav-item" href="#exemplos" data-target="#exemplos" aria-label="Exemplos">
+      <!-- Code SVG -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="10 17 15 12 10 7"></polyline>
+        <polyline points="5 7 4 8 9 13 4 18 5 19"></polyline>
+      </svg>
+      <span>Exemplos</span>
+    </a>
+
+    <a class="nav-item" href="#comunidade" data-target="#comunidade" aria-label="Comunidade">
+      <!-- Community SVG -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M17 21v-2a4 4 0 0 0-3-3.87"></path>
+        <path d="M7 21v-2a4 4 0 0 1 3-3.87"></path>
+        <circle cx="12" cy="7" r="4"></circle>
+      </svg>
+      <span>Comunidade</span>
+    </a>
+  </nav>
+
+  <script>
+    // =========================
+    // Remove login/oauth & dashboard logic (requested)
+    // =========================
+    // No OAuth/login code present. Page é apenas landing + menu flutuante.
+
+    // Set year
+    document.getElementById('ano').textContent = new Date().getFullYear();
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        const href = link.getAttribute('href');
+        const target = document.querySelector(href);
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          // update active state for bottom nav items if applicable
+          setActiveNavForTarget(href);
+        }
+      });
+    });
+
+    // Bottom nav interaction: highlight active item based on viewport
+    const navItems = Array.from(document.querySelectorAll('.bottom-nav .nav-item'));
+    function setActiveNavForTarget(hash) {
+      navItems.forEach(it => {
+        if (it.getAttribute('href') === hash) it.classList.add('active');
+        else it.classList.remove('active');
+      });
+    }
+
+    // IntersectionObserver to update active nav on scroll
+    const sections = ['#home','#sobre','#apis','#exemplos','#comunidade'].map(s => document.querySelector(s)).filter(Boolean);
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const id = '#' + entry.target.id;
+            setActiveNavForTarget(id);
+          }
+        });
+      }, { root: null, threshold: 0.45 });
+
+      sections.forEach(s => io.observe(s));
+    }
+
+    // Accessibility: keyboard navigation for bottom nav
+    navItems.forEach(item => {
+      item.setAttribute('tabindex','0');
+      item.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') item.click();
+      });
+    });
+
+    // Performance: lightweight particles (kept but tuned for mobile)
+    (function particleLoop(){
+      const canvas = document.getElementById('bgCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d', { alpha: true });
+      let w = canvas.width = innerWidth;
+      let h = canvas.height = innerHeight;
+      const DPR = Math.max(1, window.devicePixelRatio || 1);
+      canvas.width = w * DPR;
+      canvas.height = h * DPR;
+      canvas.style.width = w + 'px';
+      canvas.style.height = h + 'px';
+      ctx.scale(DPR, DPR);
+
+      let particles = [];
+      const MAX = Math.min(90, Math.round((w*h) / 22000)); // tuned down for mobile perf
+      const colors = ['rgba(125,63,224,0.14)','rgba(183,138,255,0.10)','rgba(124,60,200,0.06)'];
+
+      function create() {
+        particles = [];
+        for (let i=0;i<MAX;i++){
+          particles.push({
+            x: Math.random()*w,
+            y: Math.random()*h,
+            vx: (Math.random()-0.5) * 0.35,
+            vy: (Math.random()-0.5) * 0.35,
+            r: 0.6 + Math.random()*2.4,
+            c: colors[Math.floor(Math.random()*colors.length)],
+            t: Math.random()*100
+          });
+        }
+      }
+      create();
+
+      let last = performance.now();
+      function frame(now){
+        const dt = Math.min(40, now - last);
+        last = now;
+        ctx.clearRect(0,0,w,h);
+
+        // faint gradient
+        const g = ctx.createLinearGradient(0,0,w,h);
+        g.addColorStop(0, 'rgba(10,6,18,0.02)');
+        g.addColorStop(1, 'rgba(12,8,22,0.02)');
+        ctx.fillStyle = g;
+        ctx.fillRect(0,0,w,h);
+
+        for (let p of particles){
+          p.x += p.vx * (dt/16);
+          p.y += p.vy * (dt/16);
+          p.t += 0.02;
+          if (p.x < -20) p.x = w + 20;
+          if (p.x > w + 20) p.x = -20;
+          if (p.y < -20) p.y = h + 20;
+          if (p.y > h + 20) p.y = -20;
+
+          ctx.beginPath();
+          ctx.fillStyle = p.c;
+          ctx.arc(p.x, p.y, p.r + Math.sin(p.t)*0.35, 0, Math.PI*2);
+          ctx.fill();
+        }
+
+        // subtle connections for desktop only (skip heavy loops on very small screens)
+        if (window.innerWidth > 640) {
+          for (let i=0;i<particles.length;i++){
+            for (let j=i+1;j<particles.length;j++){
+              const a = particles[i], b = particles[j];
+              const dx = a.x-b.x, dy = a.y-b.y;
+              const d2 = dx*dx+dy*dy;
+              if (d2 < 12000){
+                ctx.beginPath();
+                ctx.strokeStyle = 'rgba(125,63,224,'+ (0.004 + (1 - (d2/12000))*0.04) +')';
+                ctx.lineWidth = 1;
+                ctx.moveTo(a.x,a.y);
+                ctx.lineTo(b.x,b.y);
+                ctx.stroke();
+              }
+            }
+          }
+        }
+
+        requestAnimationFrame(frame);
+      }
+
+      requestAnimationFrame(frame);
+
+      let resizeTid;
+      addEventListener('resize', ()=>{
+        clearTimeout(resizeTid);
+        resizeTid = setTimeout(()=>{
+          w = canvas.width = innerWidth;
+          h = canvas.height = innerHeight;
+          canvas.width = w * DPR;
+          canvas.height = h * DPR;
+          canvas.style.width = w + 'px';
+          canvas.style.height = h + 'px';
+          ctx.scale(DPR, DPR);
+          create();
+        }, 120);
+      });
+    })();
+
+    // small UX: hide bottom nav on upward scroll (desktop behavior) to increase reading space
+    (function autoHideBottomNav(){
+      const nav = document.querySelector('.bottom-nav');
+      if (!nav) return;
+      let lastY = window.scrollY;
+      let ticking = false;
+      window.addEventListener('scroll', () => {
+        if (ticking) return;
+        window.requestAnimationFrame(() => {
+          const currentY = window.scrollY;
+          if (currentY > lastY + 10) {
+            // scrolling down => hide
+            nav.style.transform = 'translate(-50%, 30px)';
+            nav.style.opacity = '0';
+            nav.style.pointerEvents = 'none';
+          } else if (currentY < lastY - 10) {
+            // scrolling up => show
+            nav.style.transform = 'translate(-50%, 0)';
+            nav.style.opacity = '1';
+            nav.style.pointerEvents = 'auto';
+          }
+          lastY = currentY;
+          ticking = false;
+        });
+        ticking = true;
+      }, { passive: true });
+    })();
+  </script>
+</body>
+</html>
