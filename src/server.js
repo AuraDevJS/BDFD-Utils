@@ -3,93 +3,85 @@ import express from "express";
 import cors from "cors";
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(cors());
 
 const PORT = process.env.PORT || 3000;
 
-// Diretórios principais
-const pagesDir = path.join(process.cwd(), "src/routes/pages");
-const apiDir = path.join(process.cwd(), "src/routes/api");
-const assetsDir = path.join(process.cwd(), "src/assets");
+// Diretórios
+const pagesDir = path.join(__dirname, "routes/pages");
+const apiDir = path.join(__dirname, "routes/api");
+const assetsDir = path.join(__dirname, "assets");
 
-// Servir assets públicos via /assets
+// Servir assets
 app.use("/assets", express.static(assetsDir));
 
-/* ============================================================
-   📌 Função para registrar PÁGINAS (HTML) com rotas amigáveis
-   ------------------------------------------------------------
-   - /folder/index.html  → /folder
-   - /folder/page.html   → /folder/page
-   - Ignora pastas sem HTML
-   ============================================================ */
 function loadPages(dir, baseRoute = "") {
-  const items = fs.readdirSync(dir);
+  const items = fs.readdirSync(dir, { withFileTypes: true });
 
   for (const item of items) {
-    const fullPath = path.join(dir, item);
-    const stats = fs.statSync(fullPath);
+    const fullPath = path.join(dir, item.name);
 
-    if (stats.isDirectory()) {
-      const hasIndex = fs.existsSync(path.join(fullPath, "index.html"));
-
-      // Só cria rota da pasta se tiver index.html
-      const route = hasIndex ? `${baseRoute}/${item}` : baseRoute;
+    if (item.isDirectory()) {
+      const indexExists = fs.existsSync(path.join(fullPath, "index.html"));
+      const route = indexExists ? `${baseRoute}/${item.name}` : baseRoute;
       loadPages(fullPath, route);
       continue;
     }
 
-    if (item.endsWith(".html")) {
-      const pageName = item.replace(".html", "");
+    if (item.name.endsWith(".html")) {
+      const pageName = item.name.replace(".html", "");
       const routePath =
         pageName === "index" ? baseRoute || "/" : `${baseRoute}/${pageName}`;
-
-      app.get(routePath, (req, res) => res.sendFile(fullPath));
+      app.get(routePath, (_, res) => res.sendFile(fullPath));
       console.log(`📄 Página carregada: ${routePath}`);
     }
   }
 }
 
-/* ============================================================
-   🔥 Função para registrar APIs
-   ------------------------------------------------------------
-   - Cada .js vira rota com caminho literal
-   - /api/tools/index.js → /api/tools/index
-   ============================================================ */
 function loadAPIs(dir, baseRoute = "/api") {
-  const items = fs.readdirSync(dir);
+  const items = fs.readdirSync(dir, { withFileTypes: true });
 
   for (const item of items) {
-    const fullPath = path.join(dir, item);
-    const stats = fs.statSync(fullPath);
+    const fullPath = path.join(dir, item.name);
 
-    if (stats.isDirectory()) {
-      loadAPIs(fullPath, `${baseRoute}/${item}`);
-    } else if (item.endsWith(".js")) {
-      const route = `${baseRoute}/${item.replace(".js", "")}`;
+    if (item.isDirectory()) {
+      loadAPIs(fullPath, `${baseRoute}/${item.name}`);
+      continue;
+    }
+
+    if (item.name.endsWith(".js")) {
+      const route = `${baseRoute}/${item.name.replace(".js", "")}`;
 
       import(fullPath).then((module) => {
-        app.get(route, module.default);
-        console.log(`⚡ API carregada: ${route}`);
+        const handler = module.default;
+        if (typeof handler === "function") {
+          app.all(route, handler);
+          console.log(`⚡ API carregada: ${route}`);
+        } else {
+          console.warn(`❌ Ignorado: ${route} (export default não é função)`);
+        }
       });
     }
   }
 }
 
-// Carregar páginas e APIs
 loadPages(pagesDir);
 loadAPIs(apiDir);
 
-// Rota fallback — 404 amigável
 app.use((req, res) => {
-  res.status(404).send(`
-    <h1 style="font-family:sans-serif;color:#a44">404 • Página não encontrada</h1>
-    <p>Você tentou acessar: ${req.originalUrl}</p>
-  `);
+  res.status(404).json({
+    status: 404,
+    error: "Rota não encontrada",
+    route: req.originalUrl
+  });
 });
 
-// Iniciar servidor
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor iniciado em http://localhost:${PORT}`);
+  console.log(`🚀 Servidor iniciado: http://localhost:${PORT}`);
 });
