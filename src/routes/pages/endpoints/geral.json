@@ -1,0 +1,32 @@
+{
+  "category": "Geral",
+  "items": [
+    {
+      "route": "/v1/status",
+      "method": "GET",
+      "description": "Retorna o status e informações da API.",
+      "auth": false,
+      "response": {
+        "status": "online",
+        "version": "1.0.0",
+        "uptime": 12503
+      },
+      "examples": [
+        "fetch('/v1/status').then(r=>r.json()).then(console.log)"
+      ]
+    },
+    {
+      "route": "/v1/ping",
+      "method": "GET",
+      "description": "Retorna 'pong' para teste de conexão.",
+      "auth": false,
+      "response": {
+        "ping": "pong",
+        "timestamp": 1730881200
+      },
+      "examples": [
+        "fetch('/v1/ping').then(r=>r.json()).then(console.log)"
+      ]
+    }
+  ]
+}
