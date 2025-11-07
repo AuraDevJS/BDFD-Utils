@@ -1,0 +1,38 @@
+{
+  "category": "Usuários",
+  "items": [
+    {
+      "route": "/v1/users/{id}",
+      "method": "GET",
+      "description": "Retorna informações públicas de um usuário.",
+      "auth": false,
+      "params": {
+        "id": "string (ID do usuário)"
+      },
+      "response": {
+        "id": "1234",
+        "username": "DevUser",
+        "joinedAt": "2024-03-21",
+        "badges": ["early", "tester"]
+      },
+      "examples": [
+        "fetch('/v1/users/1234').then(r=>r.json()).then(console.log)"
+      ]
+    },
+    {
+      "route": "/v1/users/rank",
+      "method": "GET",
+      "description": "Retorna o top 10 usuários no ranking.",
+      "auth": false,
+      "response": {
+        "ranking": [
+          { "username": "DevUser", "score": 1200 },
+          { "username": "CoderBR", "score": 1180 }
+        ]
+      },
+      "examples": [
+        "fetch('/v1/users/rank').then(r=>r.json()).then(console.log)"
+      ]
+    }
+  ]
+}
