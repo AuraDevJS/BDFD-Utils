@@ -1,0 +1,44 @@
+{
+  "category": "Ferramentas",
+  "items": [
+    {
+      "route": "/v1/tools/format",
+      "method": "POST",
+      "description": "Formata um texto com base no estilo solicitado.",
+      "auth": false,
+      "params": {
+        "text": "string",
+        "style": "upper | lower | capitalized"
+      },
+      "response": {
+        "original": "exemplo de texto",
+        "formatted": "EXEMPLO DE TEXTO",
+        "style": "upper"
+      },
+      "examples": [
+        {
+          "request": {
+            "text": "exemplo de texto",
+            "style": "upper"
+          }
+        }
+      ]
+    },
+    {
+      "route": "/v1/tools/emoji-search",
+      "method": "GET",
+      "description": "Pesquisa emojis por palavra-chave.",
+      "auth": false,
+      "params": {
+        "q": "string (termo buscado)"
+      },
+      "response": {
+        "query": "love",
+        "results": ["❤️", "😍", "💕", "😘"]
+      },
+      "examples": [
+        "fetch('/v1/tools/emoji-search?q=love').then(r=>r.json()).then(console.log)"
+      ]
+    }
+  ]
+}
