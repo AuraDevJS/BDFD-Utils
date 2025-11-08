@@ -2,13 +2,14 @@
   "category": "Ferramentas",
   "items": [
     {
-      "route": "/v1/tools/format",
-      "method": "POST",
-      "description": "Formata um texto com base no estilo solicitado.",
+      "route": "/v1/format/number",
+      "method": "GET",
+      "description": "Formata um número com base no estilo solicitado.",
       "auth": false,
       "params": {
-        "text": "string",
-        "style": "upper | lower | capitalized"
+        "value": "string",
+        "style": "short | long | point | currency | compact | scientific | roman | binary | ordinal | percent | time | bytes",
+        "mode": "text (padrão) | json (todos os estilos juntos)"
       },
       "response": {
         "original": "exemplo de texto",
