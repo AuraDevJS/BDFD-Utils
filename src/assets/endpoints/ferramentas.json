@@ -14,9 +14,10 @@
       "response": {"input":"1000","number":1000,"short":"1.0K","long":"1.0 mil","point":"1.000","currency":"R$ 1.000,00","compact":"1 mil","scientific":"1.00e+3","roman":"M","binary":"1111101000","ordinal":"1000º","percent":"100000.00%","time":"0h 16m 40s","bytes":"1000.00 B"},
       "examples": [
         {
-          "request": {
-            "query": "?value=1000&mode=json"
-          }
+          "query": "?value=1000&mode=json"
+        },
+        {
+          "bdfd": "teste
         }
       ]
     },
