@@ -1,6 +1,4 @@
-
 import { createCanvas, loadImage } from "@napi-rs/canvas";
-import path from "path";
 
 const cache = {
   templates: new Map(),
@@ -17,9 +15,8 @@ async function fetchJSON(url) {
   }
 }
 
-async function getImage(src, fallbackTransparent = true) {
-  if (!src) return fallbackTransparent ? null : null;
-
+async function getImage(src, transparentIfFail = true) {
+  if (!src) return null;
   if (cache.images.has(src)) return cache.images.get(src);
 
   try {
@@ -27,16 +24,9 @@ async function getImage(src, fallbackTransparent = true) {
     cache.images.set(src, img);
     return img;
   } catch {
-    if (!fallbackTransparent) throw new Error("IMAGE_NOT_LOADED");
+    if (!transparentIfFail) throw new Error("IMAGE_NOT_LOADED");
     return null;
   }
-}
-
-function isColorString(s) {
-  if (!s) return false;
-  return /^#([0-9A-F]{3}){1,2}$/i.test(s) ||
-    /^rgba?\(/i.test(s) ||
-    /^[a-z]+$/i.test(s);
 }
 
 export default async (req, res) => {
@@ -61,7 +51,7 @@ export default async (req, res) => {
     "ERR-0002": "avatarURL não fornecido",
     "ERR-0003": "template não encontrado",
     "ERR-0004": "Erro ao gerar imagem",
-    "ERR-0005": "background inválido ou não carregável",
+    "ERR-0005": "background inválido",
     "ERR-0006": "icone não carregado"
   };
 
@@ -71,14 +61,12 @@ export default async (req, res) => {
   if (!avatarURL)
     return res.status(400).json({ success: false, errorID: "ERR-0002", error: errorMap["ERR-0002"] });
 
-  // ---- Template Loader via HTTP GET
-  let config;
   const templateURL = `${BASE_URL}/${template}/template.json`;
+  let config;
 
   try {
-    if (cache.templates.has(template)) {
-      config = cache.templates.get(template);
-    } else {
+    if (cache.templates.has(template)) config = cache.templates.get(template);
+    else {
       config = await fetchJSON(templateURL);
       cache.templates.set(template, config);
     }
@@ -93,48 +81,95 @@ export default async (req, res) => {
     const canvas = createCanvas(WIDTH, HEIGHT);
     const ctx = canvas.getContext("2d");
 
-    // ---- Background Layer
+    // ======================================================
+    // LAYER 1: BACKGROUND
+    // ======================================================
     if (bg) {
       if (/^https?:\/\//i.test(bg)) {
         const bgImg = await getImage(bg);
         if (!bgImg)
           return res.status(400).json({ success: false, errorID: "ERR-0005", error: errorMap["ERR-0005"] });
         ctx.drawImage(bgImg, 0, 0, WIDTH, HEIGHT);
-      } else if (isColorString(bg)) {
+      } else {
         ctx.fillStyle = bg;
         ctx.fillRect(0, 0, WIDTH, HEIGHT);
-      } else {
-        return res.status(400).json({ success: false, errorID: "ERR-0005", error: errorMap["ERR-0005"] });
       }
     } else {
-      ctx.fillStyle = "#1e1e1e";
+      ctx.fillStyle = config.background?.defaultColor || "#1e1e1e";
       ctx.fillRect(0, 0, WIDTH, HEIGHT);
     }
 
-    // ---- Template PNG Layer
+    // ======================================================
+    // LAYER 2: TEMPLATE PNG (opcional)
+    // ======================================================
     const templatePNG = `${BASE_URL}/${template}/template.png`;
-    const tplImg = await getImage(templatePNG);
+    const tplImg = await getImage(templatePNG, true);
     if (tplImg) ctx.drawImage(tplImg, 0, 0, WIDTH, HEIGHT);
 
-    // ---- Avatar
-    const avatarImg = await getImage(avatarURL);
+    // ======================================================
+    // LAYER 3: SIDEBAR (se existir)
+    // ======================================================
+    if (config.sidebar) {
+      const sb = config.sidebar;
+      ctx.fillStyle = sb.color || "rgba(0,0,0,0.4)";
+      ctx.roundRect(sb.x, sb.y, sb.width, sb.height, sb.radius || 0);
+      ctx.fill();
+    }
+
+    // ======================================================
+    // LAYER 4: AVATAR (posição vem do template)
+    // ======================================================
+    const avatarImg = await getImage(avatarURL, false);
     if (!avatarImg)
       return res.status(400).json({ success: false, errorID: "ERR-0004", error: "avatarURL inválido" });
 
-    // draw avatar (código omitido para encurtar)
+    const av = config.avatar;
+    if (av) {
+      const r = av.radius || (av.w / 2);
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(av.x + r, av.y + r, r, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.drawImage(avatarImg, av.x, av.y, av.w, av.h);
+      ctx.restore();
+    }
 
-    // ---- Coins
+    // ======================================================
+    // LAYER 5: TEXTOS (username, bio, etc)
+    // ======================================================
+    if (config.text) {
+      for (const [key, txt] of Object.entries(config.text)) {
+        ctx.font = `${txt.weight || 400} ${txt.size || 20}px ${txt.font || "sans-serif"}`;
+        ctx.fillStyle = txt.color || "#fff";
+        ctx.fillText(
+          key === "username" ? username :
+          key === "bio" ? bio || "" :
+          key === "level" ? `Lv ${level || 0}` :
+          "",
+          txt.x,
+          txt.y
+        );
+      }
+    }
+
+    // ======================================================
+    // LAYER 6: MOEDAS
+    // ======================================================
     if (coins !== undefined) {
-      const iconRef = coinIcon || config?.coins?.icon;
-      if (iconRef) {
-        const iconImg = await getImage(iconRef);
-        if (iconImg) {
-          // draw icon + coin text
-        } else {
-          // fallback: sem ícone
+      const c = config.coins;
+      if (c?.enabled) {
+        const iconRef = coinIcon || c.icon;
+        let iconImg = null;
+        if (iconRef) {
+          const iconURL = /^https?:\/\//.test(iconRef) ? iconRef : `${BASE_URL}/${template}/${iconRef}`;
+          iconImg = await getImage(iconURL, true);
         }
-      } else {
-        // sem ícone
+
+        if (iconImg) ctx.drawImage(iconImg, c.x, c.y, c.size, c.size);
+
+        ctx.font = `${c.weight || 400} ${c.size || 20}px ${c.font || "sans-serif"}`;
+        ctx.fillStyle = c.color || "#fff";
+        ctx.fillText(`${coins}`, c.x + (c.size + 5), c.y + (c.size - 5));
       }
     }
 
@@ -145,12 +180,11 @@ export default async (req, res) => {
         success: true,
         message: "Perfil gerado",
         template,
-        image: `${req.protocol}://${req.get("host")}${req.originalUrl}`
+        render: req.originalUrl
       });
     }
 
     res.setHeader("Content-Type", "image/png");
-    res.setHeader("Content-Length", buffer.length);
     return res.status(200).send(buffer);
 
   } catch (err) {
@@ -158,7 +192,7 @@ export default async (req, res) => {
       success: false,
       errorID: "ERR-0004",
       error: errorMap["ERR-0004"],
-      details: err?.message
+      details: err.message
     });
   }
 };
