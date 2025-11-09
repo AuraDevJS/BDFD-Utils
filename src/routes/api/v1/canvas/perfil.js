@@ -1,4 +1,4 @@
-(chatgpt dev)
+
 import { createCanvas, loadImage } from "@napi-rs/canvas";
 import path from "path";
 
