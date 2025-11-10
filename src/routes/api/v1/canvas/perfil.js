@@ -1,5 +1,4 @@
 import { createCanvas, loadImage, GlobalFonts } from "@napi-rs/canvas";
-import fetch from "node-fetch"; // caso use Node <18
 
 const cache = {
   templates: new Map(),
