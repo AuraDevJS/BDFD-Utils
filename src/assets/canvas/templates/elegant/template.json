@@ -13,7 +13,7 @@
     "y": 100,
     "size": 120,
     "shape": "circle",
-    "radius": 999,
+    "radius": 20,
     "border": {
       "width": 4,
       "color": "#ffffff"
