@@ -27,7 +27,7 @@
     "enabled": true,
     "x": 100,
     "y": 100,
-    "size": 1000,
+    "size": 200,
     "shape": "circle",
     "radius": 20,
     "border": {
