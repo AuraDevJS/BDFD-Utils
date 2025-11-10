@@ -130,7 +130,7 @@ export default async (req, res) => {
       ctx.beginPath();
       ctx.arc(av.x + r, av.y + r, r, 0, Math.PI * 2);
       ctx.clip();
-      ctx.drawImage(avatarImg, av.x, av.y, av.w, av.h);
+      ctx.drawImage(avatarImg, av.x, av.y, av.size, av.size);
       ctx.restore();
     }
 
