@@ -1,6 +1,6 @@
 import { createCanvas, loadImage, GlobalFonts } from "@napi-rs/canvas";
 
-GlobalFonts.registerFromPath("../../../../../assets/fonts/Montserrat.ttf", "FontM");
+GlobalFonts.registerFromPath("../../../../assets/fonts/Montserrat.ttf", "FontM");
 GlobalFonts.registerFromPath("../../../../assets/fonts/NotoColorEmoji-Regular.ttf", "Emoji1");
 
 const cache = {
