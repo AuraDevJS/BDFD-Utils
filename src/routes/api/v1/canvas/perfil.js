@@ -81,9 +81,7 @@ export default async (req, res) => {
     const canvas = createCanvas(WIDTH, HEIGHT);
     const ctx = canvas.getContext("2d");
 
-    // ======================================================
-    // LAYER 1: BACKGROUND
-    // ======================================================
+    // ================= BACKGROUND =================
     if (bg) {
       if (/^https?:\/\//i.test(bg)) {
         const bgImg = await getImage(bg);
@@ -99,33 +97,28 @@ export default async (req, res) => {
       ctx.fillRect(0, 0, WIDTH, HEIGHT);
     }
 
-    // ======================================================
-    // LAYER 2: TEMPLATE PNG (opcional)
-    // ======================================================
+    // ================= TEMPLATE IMAGE (OPTIONAL) =================
     const templatePNG = `${BASE_URL}/${template}/template.png`;
     const tplImg = await getImage(templatePNG, true);
     if (tplImg) ctx.drawImage(tplImg, 0, 0, WIDTH, HEIGHT);
 
-    // ======================================================
-    // LAYER 3: SIDEBAR (se existir)
-    // ======================================================
+    // ================= SIDEBAR =================
     if (config.sidebar) {
       const sb = config.sidebar;
       ctx.fillStyle = sb.color || "rgba(0,0,0,0.4)";
+      ctx.beginPath();
       ctx.roundRect(sb.x, sb.y, sb.width, sb.height, sb.radius || 0);
       ctx.fill();
     }
 
-    // ======================================================
-    // LAYER 4: AVATAR (posição vem do template)
-    // ======================================================
+    // ================= AVATAR =================
     const avatarImg = await getImage(avatarURL, false);
     if (!avatarImg)
       return res.status(400).json({ success: false, errorID: "ERR-0004", error: "avatarURL inválido" });
 
     const av = config.avatar;
     if (av) {
-      const r = av.radius || (av.size / 2);
+      const r = av.radius || av.size / 2;
       ctx.save();
       ctx.beginPath();
       ctx.arc(av.x + r, av.y + r, r, 0, Math.PI * 2);
@@ -134,32 +127,29 @@ export default async (req, res) => {
       ctx.restore();
     }
 
-    // ======================================================
-    // LAYER 5: TEXTOS (username, bio, etc)
-    // ======================================================
+    // ================= TEXTS =================
     if (config.text) {
       for (const [key, txt] of Object.entries(config.text)) {
         ctx.font = `${txt.weight || 400} ${txt.size || 20}px ${txt.font || "sans-serif"}`;
         ctx.fillStyle = txt.color || "#fff";
-        ctx.fillText(
-          key === "username" ? username :
-          key === "bio" ? bio || "" :
-          key === "level" ? `Lv ${level || 0}` :
-          "",
-          txt.x,
-          txt.y
-        );
+
+        let value = "";
+        if (key === "username") value = username;
+        else if (key === "bio") value = bio || "";
+        else if (key === "level") value = `Lv ${level || 0}`;
+        else if (key === "xp" && xp !== undefined && maxXP !== undefined) value = `${xp}/${maxXP}`;
+
+        ctx.fillText(value, txt.x, txt.y);
       }
     }
 
-    // ======================================================
-    // LAYER 6: MOEDAS
-    // ======================================================
+    // ================= COINS =================
     if (coins !== undefined) {
       const c = config.coins;
       if (c?.enabled) {
         const iconRef = coinIcon || c.icon;
         let iconImg = null;
+
         if (iconRef) {
           const iconURL = /^https?:\/\//.test(iconRef) ? iconRef : `${BASE_URL}/${template}/${iconRef}`;
           iconImg = await getImage(iconURL, true);
