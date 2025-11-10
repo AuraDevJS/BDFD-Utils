@@ -125,7 +125,7 @@ export default async (req, res) => {
 
     const av = config.avatar;
     if (av) {
-      const r = av.radius || (av.w / 2);
+      const r = av.radius || (av.size / 2);
       ctx.save();
       ctx.beginPath();
       ctx.arc(av.x + r, av.y + r, r, 0, Math.PI * 2);
