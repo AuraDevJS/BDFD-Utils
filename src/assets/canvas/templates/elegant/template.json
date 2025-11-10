@@ -3,20 +3,7 @@
     "name": "elegant",
     "description": "Cartão elegante com sidebar",
     "width": 800,
-    "height": 400,
-    "useTemplateImage": false,
-
-    "layers": [
-      "background",
-      "templateImage",
-      "sidebar",
-      "avatar",
-      "username",
-      "tag",
-      "bio",
-      "stats",
-      "coins"
-    ]
+    "height": 400
   },
 
   "background": {
@@ -37,57 +24,57 @@
     }
   },
 
-  "username": {
-    "enabled": true,
-    "x": 230,
-    "y": 110,
-    "font": "bold 36px Arial",
-    "color": "#ffffff",
-    "maxWidth": 480
-  },
-
-  "tag": {
-    "enabled": true,
-    "x": 230,
-    "y": 150,
-    "font": "24px Sans",
-    "color": "#cccccc",
-    "prefix": "#"
-  },
-
-  "bio": {
-    "enabled": true,
-    "x": 230,
-    "y": 185,
-    "font": "20px Sans",
-    "color": "#dddddd",
-    "maxWidth": 520,
-    "maxLines": 2
-  },
-
-  "stats": {
-    "enabled": true,
-    "x": 230,
-    "y": 240,
-    "barWidth": 300,
-    "barHeight": 20,
-    "textColor": "#ffffff",
-    "levelFont": "20px Sans",
-    "barBackground": "#333333",
-    "barFill": "#00cc88",
-    "barBorder": "#ffffff",
-    "showXPText": true
-  },
-
-  "coins": {
-    "enabled": true,
-    "x": 230,
-    "y": 300,
-    "font": "22px Sans",
-    "color": "#ffdd00",
-    "icon": "💰",
-    "iconSize": 26,
-    "spacing": 8
+  "text": {
+    "username": {
+      "enabled": true,
+      "x": 230,
+      "y": 110,
+      "font": "bold 36px Montserrat",
+      "color": "#ffffff",
+      "maxWidth": 480
+    },
+    "tag": {
+      "enabled": true,
+      "x": 230,
+      "y": 150,
+      "font": "24px Montserrat",
+      "color": "#cccccc",
+      "prefix": "#"
+    },
+    "bio": {
+      "enabled": true,
+      "x": 230,
+      "y": 185,
+      "font": "20px Montserrat",
+      "color": "#dddddd",
+      "maxWidth": 520,
+      "maxLines": 2
+    },
+    "level": {
+      "enabled": true,
+      "x": 230,
+      "y": 240,
+      "font": "20px Montserrat",
+      "color": "#ffffff"
+    },
+    "xp": {
+      "enabled": true,
+      "x": 230,
+      "y": 270,
+      "font": "18px Montserrat",
+      "color": "#ffffff",
+      "showXPText": true
+    },
+    "coins": {
+      "enabled": true,
+      "x": 230,
+      "y": 300,
+      "font": "22px Montserrat",
+      "color": "#ffdd00",
+      "icon": "💰",
+      "iconSize": 26,
+      "spacing": 8
+    }
   },
 
   "sidebar": {
@@ -105,13 +92,13 @@
       {
         "type": "text",
         "text": "Membro desde",
-        "font": "14px Sans",
+        "font": "14px Montserrat",
         "color": "#aaaaaa"
       },
       {
         "type": "dynamic",
         "key": "createdAt",
-        "font": "15px Sans",
+        "font": "15px Montserrat",
         "color": "#ffffff",
         "fallback": "??/??/????"
       }
