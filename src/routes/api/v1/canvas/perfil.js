@@ -131,20 +131,49 @@ export default async (req, res) => {
     }
 
     // ================= TEXTS =================
-    if (config.text) {
-      for (const [key, txt] of Object.entries(config.text)) {
-        ctx.font = `${txt.weight || 400} ${txt.size || 20}px ${txt.font || "sans-serif"}, Emoji1`;
-        ctx.fillStyle = txt.color || "#fff";
+if (config.text) {
+  for (const [key, txt] of Object.entries(config.text)) {
+    if (!txt.enabled) continue;
 
-        let value = "";
-        if (key === "username") value = username;
-        else if (key === "bio") value = bio || "";
-        else if (key === "level") value = `Lv ${level || 0}`;
-        else if (key === "xp" && xp !== undefined && maxXP !== undefined) value = `${xp}/${maxXP}`;
+    ctx.font = `${txt.font}, Emoji1`; // Usa exatamente o font vindo do JSON
+    ctx.fillStyle = txt.color || "#fff";
 
-        ctx.fillText(value, txt.x, txt.y);
-      }
+    let value = "";
+
+    switch (key) {
+      case "username":
+        value = username;
+        break;
+
+      case "tag":
+        value = txt.prefix ? `${txt.prefix}${username}` : username;
+        break;
+
+      case "bio":
+        value = bio || "";
+        break;
+
+      case "level":
+        value = `Lv ${level || 0}`;
+        break;
+
+      case "xp":
+        if (xp !== undefined && maxXP !== undefined) {
+          value = txt.showXPText ? `${xp}/${maxXP}` : "";
+        }
+        break;
+
+      case "coins":
+        if (coins !== undefined) {
+          value = `${coins}`;
+        }
+        break;
     }
+
+    if (value) ctx.fillText(value, txt.x, txt.y);
+  }
+}
+
 
     // ================= COINS =================
     if (coins !== undefined) {
