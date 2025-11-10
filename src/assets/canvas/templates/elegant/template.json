@@ -29,7 +29,7 @@
       "enabled": true,
       "x": 230,
       "y": 110,
-      "font": "bold 36px Montserrat",
+      "font": "bold 36px FontM",
       "color": "#ffffff",
       "maxWidth": 480
     },
@@ -37,7 +37,7 @@
       "enabled": true,
       "x": 230,
       "y": 150,
-      "font": "24px Montserrat",
+      "font": "24px FontM",
       "color": "#cccccc",
       "prefix": "#"
     },
@@ -45,7 +45,7 @@
       "enabled": true,
       "x": 230,
       "y": 185,
-      "font": "20px Montserrat",
+      "font": "20px FontM",
       "color": "#dddddd",
       "maxWidth": 520,
       "maxLines": 2
@@ -54,14 +54,14 @@
       "enabled": true,
       "x": 230,
       "y": 240,
-      "font": "20px Montserrat",
+      "font": "20px FontM",
       "color": "#ffffff"
     },
     "xp": {
       "enabled": true,
       "x": 230,
       "y": 270,
-      "font": "18px Montserrat",
+      "font": "18px FontM",
       "color": "#ffffff",
       "showXPText": true
     },
@@ -69,7 +69,7 @@
       "enabled": true,
       "x": 230,
       "y": 300,
-      "font": "22px Montserrat",
+      "font": "22px FontM",
       "color": "#ffdd00",
       "icon": "💰",
       "iconSize": 26,
