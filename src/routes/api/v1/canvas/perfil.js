@@ -1,4 +1,4 @@
-import { createCanvas, loadImage } from "@napi-rs/canvas";
+import { createCanvas, loadImage, GlobalFonts } from "@napi-rs/canvas";
 
 GlobalFonts.registerFromPath("./assets/fonts/Montserrat.ttf", "Montserrat");
 GlobalFonts.registerFromPath("./assets/fonts/NotoColorEmoji-Regular.ttf", "Emoji1");
