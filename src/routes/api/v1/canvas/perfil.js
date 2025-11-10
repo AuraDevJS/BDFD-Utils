@@ -135,7 +135,7 @@ if (config.text) {
   for (const [key, txt] of Object.entries(config.text)) {
     if (!txt.enabled) continue;
 
-    ctx.font = `${txt.font}, Emoji1`; // Usa exatamente o font vindo do JSON
+    ctx.font = `${txt.font} Emoji1`; // Usa exatamente o font vindo do JSON
     ctx.fillStyle = txt.color || "#fff";
 
     let value = "";
