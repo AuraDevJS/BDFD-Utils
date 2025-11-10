@@ -29,7 +29,7 @@
     "y": 100,
     "size": 200,
     "shape": "circle",
-    "radius": 20,
+    "radius": 100,
     "border": {
       "enabled": true,
       "width": 5,
