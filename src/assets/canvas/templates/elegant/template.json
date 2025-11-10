@@ -25,9 +25,9 @@
 
   "avatar": {
     "enabled": true,
-    "x": 50,
-    "y": 70,
-    "size": 130,
+    "x": 100,
+    "y": 100,
+    "size": 300,
     "shape": "circle",
     "radius": 20,
     "border": {
