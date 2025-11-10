@@ -9,7 +9,7 @@
   "avatar": {
     "x": 50,
     "y": 100,
-    "size": 150,
+    "size": 300,
     "shape": "circle",
     "radius": 20,
     "border": {
@@ -21,7 +21,7 @@
   "username": {
     "x": 230,
     "y": 120,
-    "font": "bold 36px Sans",
+    "font": "bold 36px Arial",
     "color": "#ffffff",
     "maxWidth": 480
   },
