@@ -195,6 +195,11 @@ if (config.text) {
       }
     }
 
+    ctx.fillStyle = "#fff";
+ctx.font = "30px FontM";
+ctx.fillText("TESTE", 10, 50);
+
+
     const buffer = await canvas.encode("png");
 
     if (String(json).toLowerCase() === "true") {
