@@ -3,79 +3,115 @@
     "name": "elegant",
     "description": "Cartão elegante com sidebar",
     "width": 800,
-    "height": 400
+    "height": 400,
+    "useTemplateImage": true,
+    "layers": ["background", "template", "avatar", "texts", "icons", "sidebar"]
   },
 
   "avatar": {
     "x": 50,
     "y": 100,
-    "size": 300,
+    "size": 120,
     "shape": "circle",
-    "radius": 20,
+    "radius": 999,
     "border": {
       "width": 4,
       "color": "#ffffff"
+    },
+    "shadow": {
+      "enabled": true,
+      "blur": 12,
+      "color": "rgba(0,0,0,0.45)"
     }
   },
 
   "username": {
-    "x": 230,
+    "enabled": true,
+    "x": 200,
     "y": 120,
-    "font": "bold 36px Arial",
+    "font": "600 34px 'Arial'",
     "color": "#ffffff",
-    "maxWidth": 480
+    "maxWidth": 450
   },
 
   "tag": {
-    "x": 230,
+    "enabled": true,
+    "x": 200,
     "y": 155,
-    "font": "24px Sans",
-    "color": "#cccccc"
+    "font": "22px 'Sans'",
+    "color": "#cccccc",
+    "prefix": "#"
   },
 
   "bio": {
-    "x": 230,
+    "enabled": true,
+    "x": 200,
     "y": 190,
-    "font": "20px Sans",
+    "font": "19px 'Sans'",
     "color": "#dddddd",
-    "maxWidth": 520,
-    "maxLines": 2
+    "maxWidth": 500,
+    "maxLines": 3
   },
 
   "stats": {
-    "x": 230,
-    "y": 240,
-    "barWidth": 300,
-    "barHeight": 18,
-    "levelFont": "20px Sans",
+    "enabled": true,
+    "x": 200,
+    "y": 250,
+    "barWidth": 340,
+    "barHeight": 20,
+    "levelFont": "20px 'Sans'",
     "textColor": "#ffffff",
     "barBackground": "#333333",
     "barFill": "#00cc88",
     "barBorder": "#ffffff",
-    "showXPText": true
+    "roundness": 10,
+    "showXPText": true,
+    "showLevelText": true,
+    "labelFormat": "Lv. {level} • {xp}/{maxXP}"
   },
 
   "coins": {
-    "x": 230,
-    "y": 310,
-    "font": "22px Sans",
+    "enabled": true,
+    "x": 200,
+    "y": 320,
+    "font": "22px 'Sans'",
     "color": "#ffdd00",
-    "icon": "💲"
+    "iconSize": 26,
+    "gap": 8,
+    "fallbackIcon": "💰",
+    "icon": "{coinIcon}"
   },
 
   "sidebar": {
     "enabled": true,
     "x": 600,
     "y": 20,
-    "width": 160,
+    "width": 170,
     "height": 360,
     "radius": 16,
     "color": "rgba(0,0,0,0.35)",
     "orientation": "vertical",
-    "padding": 12,
+    "padding": 14,
+    "shadow": {
+      "enabled": true,
+      "blur": 10,
+      "color": "rgba(0,0,0,0.4)"
+    },
     "items": [
-      { "type": "text", "text": "Membro desde", "font": "14px Sans", "color": "#aaaaaa", "yOffset": 20 },
-      { "type": "text", "text": "20 Jan 2024", "font": "16px Sans", "color": "#ffffff", "yOffset": 48 }
+      {
+        "type": "text",
+        "text": "Membro desde",
+        "font": "14px 'Sans'",
+        "color": "#aaaaaa",
+        "yOffset": 0
+      },
+      {
+        "type": "dynamicText",
+        "field": "memberSince",
+        "font": "16px 'Sans'",
+        "color": "#ffffff",
+        "yOffset": 24
+      }
     ]
   }
 }
