@@ -1,13 +1,29 @@
 import { createCanvas, loadImage, GlobalFonts } from "@napi-rs/canvas";
-
-GlobalFonts.registerFromPath("../../../../assets/fonts/Montserrat.ttf", "FontM");
-GlobalFonts.registerFromPath("../../../../assets/fonts/NotoColorEmoji-Regular.ttf", "Emoji1");
+import fetch from "node-fetch"; // caso use Node <18
 
 const cache = {
   templates: new Map(),
   images: new Map()
 };
 
+// ================= FONT REGISTRATION =================
+async function registerFonts(req) {
+  try {
+    // Montserrat
+    const montserratRes = await fetch(`${req.protocol}://${req.get("host")}/assets/fonts/Montserrat.ttf`);
+    const montserratBuffer = Buffer.from(await montserratRes.arrayBuffer());
+    GlobalFonts.registerFromBuffer(montserratBuffer, "FontM");
+
+    // Emoji
+    const emojiRes = await fetch(`${req.protocol}://${req.get("host")}/assets/fonts/NotoColorEmoji-Regular.ttf`);
+    const emojiBuffer = Buffer.from(await emojiRes.arrayBuffer());
+    GlobalFonts.registerFromBuffer(emojiBuffer, "Emoji1");
+  } catch (err) {
+    console.error("Erro ao registrar fonts:", err);
+  }
+}
+
+// ================= AUX FUNCTIONS =================
 async function fetchJSON(url) {
   try {
     const res = await fetch(url);
@@ -32,22 +48,13 @@ async function getImage(src, transparentIfFail = true) {
   }
 }
 
+// ================= API HANDLER =================
 export default async (req, res) => {
+  await registerFonts(req); // registra fonts antes de desenhar
+
   const BASE_URL = `${req.protocol}://${req.get("host")}/assets/canvas/templates`;
 
-  const {
-    username,
-    avatarURL,
-    bio,
-    level,
-    xp,
-    maxXP,
-    coins,
-    template = "default",
-    bg,
-    coinIcon,
-    json
-  } = req.query;
+  const { username, avatarURL, bio, level, xp, maxXP, coins, template = "default", bg, coinIcon, json } = req.query;
 
   const errorMap = {
     "ERR-0001": "username não fornecido",
@@ -58,19 +65,14 @@ export default async (req, res) => {
     "ERR-0006": "icone não carregado"
   };
 
-  if (!username)
-    return res.status(400).json({ success: false, errorID: "ERR-0001", error: errorMap["ERR-0001"] });
+  if (!username) return res.status(400).json({ success: false, errorID: "ERR-0001", error: errorMap["ERR-0001"] });
+  if (!avatarURL) return res.status(400).json({ success: false, errorID: "ERR-0002", error: errorMap["ERR-0002"] });
 
-  if (!avatarURL)
-    return res.status(400).json({ success: false, errorID: "ERR-0002", error: errorMap["ERR-0002"] });
-
-  const templateURL = `${BASE_URL}/${template}/template.json`;
   let config;
-
   try {
     if (cache.templates.has(template)) config = cache.templates.get(template);
     else {
-      config = await fetchJSON(templateURL);
+      config = await fetchJSON(`${BASE_URL}/${template}/template.json`);
       cache.templates.set(template, config);
     }
   } catch {
@@ -85,24 +87,11 @@ export default async (req, res) => {
     const ctx = canvas.getContext("2d");
 
     // ================= BACKGROUND =================
-    if (bg) {
-      if (/^https?:\/\//i.test(bg)) {
-        const bgImg = await getImage(bg);
-        if (!bgImg)
-          return res.status(400).json({ success: false, errorID: "ERR-0005", error: errorMap["ERR-0005"] });
-        ctx.drawImage(bgImg, 0, 0, WIDTH, HEIGHT);
-      } else {
-        ctx.fillStyle = bg;
-        ctx.fillRect(0, 0, WIDTH, HEIGHT);
-      }
-    } else {
-      ctx.fillStyle = config.background?.defaultColor || "#1e1e1e";
-      ctx.fillRect(0, 0, WIDTH, HEIGHT);
-    }
+    ctx.fillStyle = bg || config.background?.defaultColor || "#1e1e1e";
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
     // ================= TEMPLATE IMAGE (OPTIONAL) =================
-    const templatePNG = `${BASE_URL}/${template}/template.png`;
-    const tplImg = await getImage(templatePNG, true);
+    const tplImg = await getImage(`${BASE_URL}/${template}/template.png`, true);
     if (tplImg) ctx.drawImage(tplImg, 0, 0, WIDTH, HEIGHT);
 
     // ================= SIDEBAR =================
@@ -116,11 +105,10 @@ export default async (req, res) => {
 
     // ================= AVATAR =================
     const avatarImg = await getImage(avatarURL, false);
-    if (!avatarImg)
-      return res.status(400).json({ success: false, errorID: "ERR-0004", error: "avatarURL inválido" });
+    if (!avatarImg) return res.status(400).json({ success: false, errorID: "ERR-0004", error: "avatarURL inválido" });
 
-    const av = config.avatar;
-    if (av) {
+    if (config.avatar?.enabled) {
+      const av = config.avatar;
       const r = av.radius || av.size / 2;
       ctx.save();
       ctx.beginPath();
@@ -131,95 +119,37 @@ export default async (req, res) => {
     }
 
     // ================= TEXTS =================
-if (config.text) {
-  for (const [key, txt] of Object.entries(config.text)) {
-    if (!txt.enabled) continue;
+    if (config.text) {
+      for (const [key, txt] of Object.entries(config.text)) {
+        if (!txt.enabled) continue;
 
-    ctx.font = `${txt.font} Emoji1`; // Usa exatamente o font vindo do JSON
-    ctx.fillStyle = txt.color || "#fff";
+        ctx.font = `${txt.font} Emoji1`; // usa font Montserrat + Emoji
+        ctx.fillStyle = txt.color || "#fff";
 
-    let value = "";
-
-    switch (key) {
-      case "username":
-        value = username;
-        break;
-
-      case "tag":
-        value = txt.prefix ? `${txt.prefix}${username}` : username;
-        break;
-
-      case "bio":
-        value = bio || "";
-        break;
-
-      case "level":
-        value = `Lv ${level || 0}`;
-        break;
-
-      case "xp":
-        if (xp !== undefined && maxXP !== undefined) {
-          value = txt.showXPText ? `${xp}/${maxXP}` : "";
-        }
-        break;
-
-      case "coins":
-        if (coins !== undefined) {
-          value = `${coins}`;
-        }
-        break;
-    }
-
-    if (value) ctx.fillText(value, txt.x, txt.y);
-  }
-}
-
-
-    // ================= COINS =================
-    if (coins !== undefined) {
-      const c = config.coins;
-      if (c?.enabled) {
-        const iconRef = coinIcon || c.icon;
-        let iconImg = null;
-
-        if (iconRef) {
-          const iconURL = /^https?:\/\//.test(iconRef) ? iconRef : `${BASE_URL}/${template}/${iconRef}`;
-          iconImg = await getImage(iconURL, true);
+        let value = "";
+        switch (key) {
+          case "username": value = username; break;
+          case "tag": value = txt.prefix ? `${txt.prefix}${username}` : username; break;
+          case "bio": value = bio || ""; break;
+          case "level": value = `Lv ${level || 0}`; break;
+          case "xp": value = xp !== undefined && maxXP !== undefined ? `${xp}/${maxXP}` : ""; break;
+          case "coins": value = coins !== undefined ? `${coins}` : ""; break;
         }
 
-        if (iconImg) ctx.drawImage(iconImg, c.x, c.y, c.size, c.size);
-
-        ctx.font = `${c.weight || 400} ${c.size || 20}px ${c.font || "sans-serif"}`;
-        ctx.fillStyle = c.color || "#fff";
-        ctx.fillText(`${coins}`, c.x + (c.size + 5), c.y + (c.size - 5));
+        if (value) ctx.fillText(value, txt.x, txt.y);
       }
     }
-
-    ctx.fillStyle = "#fff";
-ctx.font = "30px FontM";
-ctx.fillText("TESTE", 10, 50);
-
 
     const buffer = await canvas.encode("png");
 
     if (String(json).toLowerCase() === "true") {
-      return res.status(200).json({
-        success: true,
-        message: "Perfil gerado",
-        template,
-        render: req.originalUrl
-      });
+      return res.status(200).json({ success: true, message: "Perfil gerado", template, render: req.originalUrl });
     }
 
     res.setHeader("Content-Type", "image/png");
     return res.status(200).send(buffer);
 
   } catch (err) {
-    return res.status(500).json({
-      success: false,
-      errorID: "ERR-0004",
-      error: errorMap["ERR-0004"],
-      details: err.message
-    });
+    return res.status(500).json({ success: false, errorID: "ERR-0004", error: errorMap["ERR-0004"], details: err.message });
   }
 };
