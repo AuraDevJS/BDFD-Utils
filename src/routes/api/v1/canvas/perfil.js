@@ -1,5 +1,8 @@
 import { createCanvas, loadImage } from "@napi-rs/canvas";
 
+GlobalFonts.registerFromPath("./assets/fonts/Montserrat.ttf", "Montserrat");
+GlobalFonts.registerFromPath("./assets/fonts/NotoColorEmoji-Regular.ttf", "Emoji1");
+
 const cache = {
   templates: new Map(),
   images: new Map()
@@ -130,7 +133,7 @@ export default async (req, res) => {
     // ================= TEXTS =================
     if (config.text) {
       for (const [key, txt] of Object.entries(config.text)) {
-        ctx.font = `${txt.weight || 400} ${txt.size || 20}px ${txt.font || "sans-serif"}`;
+        ctx.font = `${txt.weight || 400} ${txt.size || 20}px ${txt.font || "sans-serif"}, Emoji1`;
         ctx.fillStyle = txt.color || "#fff";
 
         let value = "";
